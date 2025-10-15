@@ -83,15 +83,13 @@ class _ConnectionPageState extends State<ConnectionPage> {
     return CustomScrollView(
       slivers: [
         SliverList(
-            delegate: SliverChildListDelegate([
-          if (!bind.isCustomClient() && !isIOS)
-            Obx(() => _buildUpdateUI(stateGlobal.updateUrl.value)),
-          _buildRemoteIDTextField(),
-        ])),
-        SliverFillRemaining(
-          hasScrollBody: true,
-          child: PeerTabPage(),
-        )
+          delegate: SliverChildListDelegate([
+            if (!bind.isCustomClient() && !isIOS)
+              Obx(() => _buildUpdateUI(stateGlobal.updateUrl.value)),
+            _buildRemoteIDTextField(),
+          ]),
+        ),
+        SliverFillRemaining(hasScrollBody: true, child: PeerTabPage()),
       ],
     ).marginOnly(top: 2, left: 10, right: 10);
   }
@@ -112,8 +110,10 @@ class _ConnectionPageState extends State<ConnectionPage> {
 
       final textLength = _idEditingController.value.text.length;
       // Select all to facilitate removing text, just following the behavior of address input of chrome.
-      _idEditingController.selection =
-          TextSelection(baseOffset: 0, extentOffset: textLength);
+      _idEditingController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: textLength,
+      );
     }
   }
 
@@ -136,13 +136,19 @@ class _ConnectionPageState extends State<ConnectionPage> {
               await launchUrl(Uri.parse(url));
             },
             child: Container(
-                alignment: AlignmentDirectional.center,
-                width: double.infinity,
-                color: Colors.pinkAccent,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Text(translate('Download new version'),
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold))));
+              alignment: AlignmentDirectional.center,
+              width: double.infinity,
+              color: Colors.pinkAccent,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                translate('Download new version'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          );
   }
 
   /// UI for the remote ID TextField.
@@ -185,8 +191,8 @@ class _ConnectionPageState extends State<ConnectionPage> {
                         );
                         _autocompleteOpts = [emptyPeer];
                       } else {
-                        String textWithoutSpaces =
-                            textEditingValue.text.replaceAll(" ", "");
+                        String textWithoutSpaces = textEditingValue.text
+                            .replaceAll(" ", "");
                         if (int.tryParse(textWithoutSpaces) != null) {
                           textEditingValue = TextEditingValue(
                             text: textWithoutSpaces,
@@ -196,88 +202,98 @@ class _ConnectionPageState extends State<ConnectionPage> {
                         String textToFind = textEditingValue.text.toLowerCase();
 
                         _autocompleteOpts = _allPeersLoader.peers
-                            .where((peer) =>
-                                peer.id.toLowerCase().contains(textToFind) ||
-                                peer.username
-                                    .toLowerCase()
-                                    .contains(textToFind) ||
-                                peer.hostname
-                                    .toLowerCase()
-                                    .contains(textToFind) ||
-                                peer.alias.toLowerCase().contains(textToFind))
+                            .where(
+                              (peer) =>
+                                  peer.id.toLowerCase().contains(textToFind) ||
+                                  peer.username.toLowerCase().contains(
+                                    textToFind,
+                                  ) ||
+                                  peer.hostname.toLowerCase().contains(
+                                    textToFind,
+                                  ) ||
+                                  peer.alias.toLowerCase().contains(textToFind),
+                            )
                             .toList();
                       }
                       return _autocompleteOpts;
                     },
                     focusNode: _idFocusNode,
                     textEditingController: _idEditingController,
-                    fieldViewBuilder: (BuildContext context,
-                        TextEditingController fieldTextEditingController,
-                        FocusNode fieldFocusNode,
-                        VoidCallback onFieldSubmitted) {
-                      updateTextAndPreserveSelection(
-                          fieldTextEditingController, _idController.text);
-                      return AutoSizeTextField(
-                        controller: fieldTextEditingController,
-                        focusNode: fieldFocusNode,
-                        minFontSize: 18,
-                        autocorrect: false,
-                        enableSuggestions: false,
-                        keyboardType: TextInputType.visiblePassword,
-                        // keyboardType: TextInputType.number,
-                        onChanged: (String text) {
-                          _idController.id = text;
+                    fieldViewBuilder:
+                        (
+                          BuildContext context,
+                          TextEditingController fieldTextEditingController,
+                          FocusNode fieldFocusNode,
+                          VoidCallback onFieldSubmitted,
+                        ) {
+                          updateTextAndPreserveSelection(
+                            fieldTextEditingController,
+                            _idController.text,
+                          );
+                          return AutoSizeTextField(
+                            controller: fieldTextEditingController,
+                            focusNode: fieldFocusNode,
+                            minFontSize: 18,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            keyboardType: TextInputType.visiblePassword,
+                            // keyboardType: TextInputType.number,
+                            onChanged: (String text) {
+                              _idController.id = text;
+                            },
+                            style: const TextStyle(
+                              fontFamily: 'WorkSans',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                              color: MyTheme.idColor,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: translate('Remote ID'),
+                              // hintText: 'Enter your remote ID',
+                              border: InputBorder.none,
+                              helperStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: MyTheme.darkGray,
+                              ),
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                letterSpacing: 0.2,
+                                color: MyTheme.darkGray,
+                              ),
+                            ),
+                            inputFormatters: [IDTextInputFormatter()],
+                            onSubmitted: (_) {
+                              onConnect();
+                            },
+                          );
                         },
-                        style: const TextStyle(
-                          fontFamily: 'WorkSans',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                          color: MyTheme.idColor,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: translate('Remote ID'),
-                          // hintText: 'Enter your remote ID',
-                          border: InputBorder.none,
-                          helperStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: MyTheme.darkGray,
-                          ),
-                          labelStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            letterSpacing: 0.2,
-                            color: MyTheme.darkGray,
-                          ),
-                        ),
-                        inputFormatters: [IDTextInputFormatter()],
-                        onSubmitted: (_) {
-                          onConnect();
-                        },
-                      );
-                    },
                     onSelected: (option) {
                       setState(() {
                         _idController.id = option.id;
                         FocusScope.of(context).unfocus();
                       });
                     },
-                    optionsViewBuilder: (BuildContext context,
-                        AutocompleteOnSelected<Peer> onSelected,
-                        Iterable<Peer> options) {
-                      options = _autocompleteOpts;
-                      double maxHeight = options.length * 50;
-                      if (options.length == 1) {
-                        maxHeight = 52;
-                      } else if (options.length == 3) {
-                        maxHeight = 146;
-                      } else if (options.length == 4) {
-                        maxHeight = 193;
-                      }
-                      maxHeight = maxHeight.clamp(0, 200);
-                      return Align(
-                          alignment: Alignment.topLeft,
-                          child: Container(
+                    optionsViewBuilder:
+                        (
+                          BuildContext context,
+                          AutocompleteOnSelected<Peer> onSelected,
+                          Iterable<Peer> options,
+                        ) {
+                          options = _autocompleteOpts;
+                          double maxHeight = options.length * 50;
+                          if (options.length == 1) {
+                            maxHeight = 52;
+                          } else if (options.length == 3) {
+                            maxHeight = 146;
+                          } else if (options.length == 4) {
+                            maxHeight = 193;
+                          }
+                          maxHeight = maxHeight.clamp(0, 200);
+                          return Align(
+                            alignment: Alignment.topLeft,
+                            child: Container(
                               decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
@@ -288,56 +304,69 @@ class _ConnectionPageState extends State<ConnectionPage> {
                                 ],
                               ),
                               child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: Material(
-                                      elevation: 4,
-                                      child: ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            maxHeight: maxHeight,
-                                            maxWidth: 320,
+                                borderRadius: BorderRadius.circular(5),
+                                child: Material(
+                                  elevation: 4,
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxHeight: maxHeight,
+                                      maxWidth: 320,
+                                    ),
+                                    child:
+                                        _allPeersLoader.peers.isEmpty &&
+                                            !_allPeersLoader.isPeersLoaded
+                                        ? Container(
+                                            height: 80,
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            ),
+                                          )
+                                        : ListView(
+                                            padding: EdgeInsets.only(top: 5),
+                                            children: options
+                                                .map(
+                                                  (peer) =>
+                                                      AutocompletePeerTile(
+                                                        onSelect: () =>
+                                                            onSelected(peer),
+                                                        peer: peer,
+                                                      ),
+                                                )
+                                                .toList(),
                                           ),
-                                          child: _allPeersLoader
-                                                      .peers.isEmpty &&
-                                                  !_allPeersLoader.isPeersLoaded
-                                              ? Container(
-                                                  height: 80,
-                                                  child: Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                  )))
-                                              : ListView(
-                                                  padding:
-                                                      EdgeInsets.only(top: 5),
-                                                  children: options
-                                                      .map((peer) =>
-                                                          AutocompletePeerTile(
-                                                              onSelect: () =>
-                                                                  onSelected(
-                                                                      peer),
-                                                              peer: peer))
-                                                      .toList(),
-                                                ))))));
-                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                   ),
                 ),
               ),
-              Obx(() => Offstage(
-                    offstage: _idEmpty.value,
-                    child: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _idController.clear();
-                          });
-                        },
-                        icon: Icon(Icons.clear, color: MyTheme.darkGray)),
-                  )),
+              Obx(
+                () => Offstage(
+                  offstage: _idEmpty.value,
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _idController.clear();
+                      });
+                    },
+                    icon: Icon(Icons.clear, color: MyTheme.darkGray),
+                  ),
+                ),
+              ),
               SizedBox(
                 width: 60,
                 height: 60,
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_forward,
-                      color: MyTheme.darkGray, size: 45),
+                  icon: const Icon(
+                    Icons.arrow_forward,
+                    color: MyTheme.darkGray,
+                    size: 45,
+                  ),
                   onPressed: onConnect,
                 ),
               ),
@@ -346,15 +375,20 @@ class _ConnectionPageState extends State<ConnectionPage> {
         ),
       ),
     );
-    final child = Column(children: [
-      if (isWebDesktop)
-        getConnectionPageTitle(context, true)
-            .marginOnly(bottom: 10, top: 15, left: 12),
-      w
-    ]);
+    final child = Column(
+      children: [
+        if (isWebDesktop)
+          getConnectionPageTitle(
+            context,
+            true,
+          ).marginOnly(bottom: 10, top: 15, left: 12),
+        w,
+      ],
+    );
     return Align(
-        alignment: Alignment.topCenter,
-        child: Container(constraints: kMobilePageConstraints, child: child));
+      alignment: Alignment.topCenter,
+      child: Container(constraints: kMobilePageConstraints, child: child),
+    );
   }
 
   @override
