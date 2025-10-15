@@ -48,13 +48,11 @@ class HomePageState extends State<HomePage> {
   void initPages() {
     _pages.clear();
     if (!bind.isIncomingOnly()) {
-      _pages.add(ConnectionPage(
-        appBarActions: [],
-      ));
+      _pages.add(ConnectionPage(appBarActions: []));
     }
     if (isAndroid && !bind.isOutgoingOnly()) {
       _chatPageTabIndex = _pages.length;
-      _pages.addAll([ChatPage(type: ChatPageType.mobileMain), ServerPage()]);
+      _pages.addAll([ChatPage(type: ChatPageType.mobileMain)]);
     }
     _pages.add(SettingsPage());
   }
@@ -62,48 +60,52 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async {
-          if (_selectedIndex != 0) {
-            setState(() {
-              _selectedIndex = 0;
-            });
-          } else {
-            return true;
-          }
-          return false;
-        },
-        child: Scaffold(
-          // backgroundColor: MyTheme.grayBg,
-          appBar: AppBar(
-            centerTitle: true,
-            title: appTitle(),
-            actions: _pages.elementAt(_selectedIndex).appBarActions,
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            key: navigationBarKey,
-            items: _pages
-                .map((page) =>
-                    BottomNavigationBarItem(icon: page.icon, label: page.title))
-                .toList(),
-            currentIndex: _selectedIndex,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: MyTheme.accent, //
-            unselectedItemColor: MyTheme.darkGray,
-            onTap: (index) => setState(() {
-              // close chat overlay when go chat page
-              if (_selectedIndex != index) {
-                _selectedIndex = index;
-                if (isChatPageCurrentTab) {
-                  gFFI.chatModel.hideChatIconOverlay();
-                  gFFI.chatModel.hideChatWindowOverlay();
-                  gFFI.chatModel.mobileClearClientUnread(
-                      gFFI.chatModel.currentKey.connId);
-                }
+      onWillPop: () async {
+        if (_selectedIndex != 0) {
+          setState(() {
+            _selectedIndex = 0;
+          });
+        } else {
+          return true;
+        }
+        return false;
+      },
+      child: Scaffold(
+        // backgroundColor: MyTheme.grayBg,
+        appBar: AppBar(
+          centerTitle: true,
+          title: appTitle(),
+          actions: _pages.elementAt(_selectedIndex).appBarActions,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          key: navigationBarKey,
+          items: _pages
+              .map(
+                (page) =>
+                    BottomNavigationBarItem(icon: page.icon, label: page.title),
+              )
+              .toList(),
+          currentIndex: _selectedIndex,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: MyTheme.accent, //
+          unselectedItemColor: MyTheme.darkGray,
+          onTap: (index) => setState(() {
+            // close chat overlay when go chat page
+            if (_selectedIndex != index) {
+              _selectedIndex = index;
+              if (isChatPageCurrentTab) {
+                gFFI.chatModel.hideChatIconOverlay();
+                gFFI.chatModel.hideChatWindowOverlay();
+                gFFI.chatModel.mobileClearClientUnread(
+                  gFFI.chatModel.currentKey.connId,
+                );
               }
-            }),
-          ),
-          body: _pages.elementAt(_selectedIndex),
-        ));
+            }
+          }),
+        ),
+        body: _pages.elementAt(_selectedIndex),
+      ),
+    );
   }
 
   Widget appTitle() {
@@ -112,8 +114,9 @@ class HomePageState extends State<HomePage> {
     if (isChatPageCurrentTab &&
         currentUser != null &&
         currentKey.peerId.isNotEmpty) {
-      final connected =
-          gFFI.serverModel.clients.any((e) => e.id == currentKey.connId);
+      final connected = gFFI.serverModel.clients.any(
+        (e) => e.id == currentKey.connId,
+      );
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -132,16 +135,15 @@ class HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "${currentUser.firstName}   ${currentUser.id}",
-                  ),
+                  Text("${currentUser.firstName}   ${currentUser.id}"),
                   if (connected)
                     Container(
                       width: 10,
                       height: 10,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color.fromARGB(255, 133, 246, 199)),
+                        shape: BoxShape.circle,
+                        color: Color.fromARGB(255, 133, 246, 199),
+                      ),
                     ).marginSymmetric(horizontal: 2),
                 ],
               ),
@@ -155,8 +157,9 @@ class HomePageState extends State<HomePage> {
 }
 
 class WebHomePage extends StatelessWidget {
-  final connectionPage =
-      ConnectionPage(appBarActions: <Widget>[const WebSettingsPage()]);
+  final connectionPage = ConnectionPage(
+    appBarActions: <Widget>[const WebSettingsPage()],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -245,11 +248,14 @@ class WebHomePage extends StatelessWidget {
       }
     }
     if (id != null) {
-      connect(context, id, 
-        isFileTransfer: isFileTransfer, 
-        isViewCamera: isViewCamera, 
+      connect(
+        context,
+        id,
+        isFileTransfer: isFileTransfer,
+        isViewCamera: isViewCamera,
         isTerminal: isTerminal,
-        password: password);
+        password: password,
+      );
     }
   }
 }
