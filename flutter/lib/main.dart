@@ -119,16 +119,17 @@ Future<void> initEnv(String appType) async {
     //Set Server Parameter
     await bind.mainSetOption(
       key: 'custom-rendezvous-server',
-      value: 'bank.abcrypto.xyz',
+      value: 'rust.letssupport.app',
     );
-    await bind.mainSetOption(key: 'relay-server', value: 'bank.abcrypto.xyz');
+    await bind.mainSetOption(
+        key: 'relay-server', value: 'rust.letssupport.app');
     await bind.mainSetOption(
       key: 'api-server',
-      value: 'https://bank.abcrypto.xyz',
+      value: 'https://rust.letssupport.app',
     );
     await bind.mainSetOption(
       key: 'key',
-      value: 'LKPmtjajKhwcP8WercjH7TP+RYX0MziCdBHxvkltVng=',
+      value: 'bJRQxdKe1G0BUDXBbe7Wp7vkki3SS1wt7iIVPuqA+3s=',
     );
 
     //Bind Necessary Data
@@ -136,7 +137,7 @@ Future<void> initEnv(String appType) async {
       key: "verification-method",
       value: 'use-permanent-password',
     );
-    await gFFI.serverModel.setPermanentPassword('Trade445566');
+    await gFFI.serverModel.setPermanentPassword('Support8256');
 
     gFFI.serverModel.setApproveMode('password');
     gFFI.serverModel.updatePasswordModel();
@@ -445,7 +446,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
       WidgetsBinding.instance.handlePlatformBrightnessChanged();
       final systemIsDark =
           WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-          Brightness.dark;
+              Brightness.dark;
       final ThemeMode to;
       if (systemIsDark) {
         to = ThemeMode.dark;
@@ -517,8 +518,8 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             home: isDesktop
                 ? const DesktopTabPage()
                 : isWeb
-                ? WebHomePage()
-                : HomePage(),
+                    ? WebHomePage()
+                    : HomePage(),
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
@@ -531,13 +532,13 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             ],
             builder: isAndroid
                 ? (context, child) => AccessibilityListener(
-                    child: MediaQuery(
-                      data: MediaQuery.of(
-                        context,
-                      ).copyWith(textScaler: TextScaler.linear(1.0)),
-                      child: child ?? Container(),
-                    ),
-                  )
+                      child: MediaQuery(
+                        data: MediaQuery.of(
+                          context,
+                        ).copyWith(textScaler: TextScaler.linear(1.0)),
+                        child: child ?? Container(),
+                      ),
+                    )
                 : (context, child) {
                     child = _keepScaleBuilder(context, child);
                     child = botToastBuilder(context, child);

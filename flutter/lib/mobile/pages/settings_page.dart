@@ -35,7 +35,7 @@ class SettingsPage extends StatefulWidget implements PageShape {
   State<SettingsPage> createState() => _SettingsState();
 }
 
-const url = 'https://rustdesk.com/';
+const url = 'https://letssupport.app/';
 
 enum KeepScreenOn {
   never,
@@ -642,33 +642,33 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     final settings = SettingsList(
       sections: [
         customClientSection,
-        if (!bind.isDisableAccount())
-          SettingsSection(
-            title: Text(translate('Account')),
-            tiles: [
-              SettingsTile(
-                title: Obx(() => Text(gFFI.userModel.userName.value.isEmpty
-                    ? translate('Login')
-                    : '${translate('Logout')} (${gFFI.userModel.userName.value})')),
-                leading: Icon(Icons.person),
-                onPressed: (context) {
-                  if (gFFI.userModel.userName.value.isEmpty) {
-                    loginDialog();
-                  } else {
-                    logOutConfirmDialog();
-                  }
-                },
-              ),
-            ],
-          ),
+        // if (!bind.isDisableAccount())
+        //   SettingsSection(
+        //     title: Text(translate('Account')),
+        //     tiles: [
+        //       SettingsTile(
+        //         title: Obx(() => Text(gFFI.userModel.userName.value.isEmpty
+        //             ? translate('Login')
+        //             : '${translate('Logout')} (${gFFI.userModel.userName.value})')),
+        //         leading: Icon(Icons.person),
+        //         onPressed: (context) {
+        //           if (gFFI.userModel.userName.value.isEmpty) {
+        //             loginDialog();
+        //           } else {
+        //             logOutConfirmDialog();
+        //           }
+        //         },
+        //       ),
+        //     ],
+        //   ),
         SettingsSection(title: Text(translate("Settings")), tiles: [
-          if (!disabledSettings && !_hideNetwork && !_hideServer)
-            SettingsTile(
-                title: Text(translate('ID/Relay Server')),
-                leading: Icon(Icons.cloud),
-                onPressed: (context) {
-                  showServerSettings(gFFI.dialogManager);
-                }),
+          // if (!disabledSettings && !_hideNetwork && !_hideServer)
+          //   SettingsTile(
+          //       title: Text(translate('ID/Relay Server')),
+          //       leading: Icon(Icons.cloud),
+          //       onPressed: (context) {
+          //         showServerSettings(gFFI.dialogManager);
+          //       }),
           if (!isIOS && !_hideNetwork && !_hideProxy)
             SettingsTile(
                 title: Text(translate('Socks5/Http(s) Proxy')),
@@ -837,7 +837,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 title: Text(translate("Version: ") + version),
                 value: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('rustdesk.com',
+                  child: Text('letssupport.app',
                       style: TextStyle(
                         decoration: TextDecoration.underline,
                       )),
@@ -862,7 +862,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             SettingsTile(
               title: Text(translate("Privacy Statement")),
               onPressed: (context) =>
-                  launchUrlString('https://rustdesk.com/privacy.html'),
+                  launchUrlString('https://letssupport.app/privacy.html'),
               leading: Icon(Icons.privacy_tip),
             )
           ],
@@ -970,17 +970,17 @@ void showThemeSettings(OverlayDialogManager dialogManager) async {
 void showAbout(OverlayDialogManager dialogManager) {
   dialogManager.show((setState, close, context) {
     return CustomAlertDialog(
-      title: Text(translate('About RustDesk')),
+      title: Text('About LetsSupport'),
       content: Wrap(direction: Axis.vertical, spacing: 12, children: [
         Text('Version: $version'),
         InkWell(
             onTap: () async {
-              const url = 'https://rustdesk.com/';
+              const url = 'https://letssupport.app/';
               await launchUrl(Uri.parse(url));
             },
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('rustdesk.com',
+              child: Text('letssupport.app',
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                   )),
