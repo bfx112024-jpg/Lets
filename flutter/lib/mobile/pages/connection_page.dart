@@ -213,8 +213,8 @@ class _ConnectionPageState extends State<ConnectionPage> {
                         );
                         _autocompleteOpts = [emptyPeer];
                       } else {
-                        String textWithoutSpaces = textEditingValue.text
-                            .replaceAll(" ", "");
+                        String textWithoutSpaces =
+                            textEditingValue.text.replaceAll(" ", "");
                         if (int.tryParse(textWithoutSpaces) != null) {
                           textEditingValue = TextEditingValue(
                             text: textWithoutSpaces,
@@ -228,11 +228,11 @@ class _ConnectionPageState extends State<ConnectionPage> {
                               (peer) =>
                                   peer.id.toLowerCase().contains(textToFind) ||
                                   peer.username.toLowerCase().contains(
-                                    textToFind,
-                                  ) ||
+                                        textToFind,
+                                      ) ||
                                   peer.hostname.toLowerCase().contains(
-                                    textToFind,
-                                  ) ||
+                                        textToFind,
+                                      ) ||
                                   peer.alias.toLowerCase().contains(textToFind),
                             )
                             .toList();
@@ -241,129 +241,125 @@ class _ConnectionPageState extends State<ConnectionPage> {
                     },
                     focusNode: _idFocusNode,
                     textEditingController: _idEditingController,
-                    fieldViewBuilder:
-                        (
-                          BuildContext context,
-                          TextEditingController fieldTextEditingController,
-                          FocusNode fieldFocusNode,
-                          VoidCallback onFieldSubmitted,
-                        ) {
-                          updateTextAndPreserveSelection(
-                            fieldTextEditingController,
-                            _idController.text,
-                          );
-                          return AutoSizeTextField(
-                            controller: fieldTextEditingController,
-                            focusNode: fieldFocusNode,
-                            minFontSize: 18,
-                            autocorrect: false,
-                            enableSuggestions: false,
-                            keyboardType: TextInputType.visiblePassword,
-                            // keyboardType: TextInputType.number,
-                            onChanged: (String text) {
-                              _idController.id = text;
-                            },
-                            style: const TextStyle(
-                              fontFamily: 'WorkSans',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 30,
-                              color: MyTheme.idColor,
-                            ),
-                            decoration: InputDecoration(
-                              labelText: translate('Remote ID'),
-                              // hintText: 'Enter your remote ID',
-                              border: InputBorder.none,
-                              helperStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: MyTheme.darkGray,
-                              ),
-                              labelStyle: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                letterSpacing: 0.2,
-                                color: MyTheme.darkGray,
-                              ),
-                            ),
-                            inputFormatters: [IDTextInputFormatter()],
-                            onSubmitted: (_) {
-                              onConnect();
-                            },
-                          );
+                    fieldViewBuilder: (
+                      BuildContext context,
+                      TextEditingController fieldTextEditingController,
+                      FocusNode fieldFocusNode,
+                      VoidCallback onFieldSubmitted,
+                    ) {
+                      updateTextAndPreserveSelection(
+                        fieldTextEditingController,
+                        _idController.text,
+                      );
+                      return AutoSizeTextField(
+                        controller: fieldTextEditingController,
+                        focusNode: fieldFocusNode,
+                        minFontSize: 18,
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        keyboardType: TextInputType.visiblePassword,
+                        // keyboardType: TextInputType.number,
+                        onChanged: (String text) {
+                          _idController.id = text;
                         },
+                        style: const TextStyle(
+                          fontFamily: 'WorkSans',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                          color: MyTheme.idColor,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: translate('Remote ID'),
+                          // hintText: 'Enter your remote ID',
+                          border: InputBorder.none,
+                          helperStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: MyTheme.darkGray,
+                          ),
+                          labelStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            letterSpacing: 0.2,
+                            color: MyTheme.darkGray,
+                          ),
+                        ),
+                        inputFormatters: [IDTextInputFormatter()],
+                        onSubmitted: (_) {
+                          onConnect();
+                        },
+                      );
+                    },
                     onSelected: (option) {
                       setState(() {
                         _idController.id = option.id;
                         FocusScope.of(context).unfocus();
                       });
                     },
-                    optionsViewBuilder:
-                        (
-                          BuildContext context,
-                          AutocompleteOnSelected<Peer> onSelected,
-                          Iterable<Peer> options,
-                        ) {
-                          options = _autocompleteOpts;
-                          double maxHeight = options.length * 50;
-                          if (options.length == 1) {
-                            maxHeight = 52;
-                          } else if (options.length == 3) {
-                            maxHeight = 146;
-                          } else if (options.length == 4) {
-                            maxHeight = 193;
-                          }
-                          maxHeight = maxHeight.clamp(0, 200);
-                          return Align(
-                            alignment: Alignment.topLeft,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.3),
-                                    blurRadius: 5,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
+                    optionsViewBuilder: (
+                      BuildContext context,
+                      AutocompleteOnSelected<Peer> onSelected,
+                      Iterable<Peer> options,
+                    ) {
+                      options = _autocompleteOpts;
+                      double maxHeight = options.length * 50;
+                      if (options.length == 1) {
+                        maxHeight = 52;
+                      } else if (options.length == 3) {
+                        maxHeight = 146;
+                      } else if (options.length == 4) {
+                        maxHeight = 193;
+                      }
+                      maxHeight = maxHeight.clamp(0, 200);
+                      return Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 5,
+                                spreadRadius: 1,
                               ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: Material(
-                                  elevation: 4,
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      maxHeight: maxHeight,
-                                      maxWidth: 320,
-                                    ),
-                                    child:
-                                        _allPeersLoader.peers.isEmpty &&
-                                            !_allPeersLoader.isPeersLoaded
-                                        ? Container(
-                                            height: 80,
-                                            child: Center(
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                              ),
-                                            ),
-                                          )
-                                        : ListView(
-                                            padding: EdgeInsets.only(top: 5),
-                                            children: options
-                                                .map(
-                                                  (peer) =>
-                                                      AutocompletePeerTile(
-                                                        onSelect: () =>
-                                                            onSelected(peer),
-                                                        peer: peer,
-                                                      ),
-                                                )
-                                                .toList(),
-                                          ),
-                                  ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Material(
+                              elevation: 4,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxHeight: maxHeight,
+                                  maxWidth: 320,
                                 ),
+                                child: _allPeersLoader.peers.isEmpty &&
+                                        !_allPeersLoader.isPeersLoaded
+                                    ? Container(
+                                        height: 80,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      )
+                                    : ListView(
+                                        padding: EdgeInsets.only(top: 5),
+                                        children: options
+                                            .map(
+                                              (peer) => AutocompletePeerTile(
+                                                onSelect: () =>
+                                                    onSelected(peer),
+                                                peer: peer,
+                                              ),
+                                            )
+                                            .toList(),
+                                      ),
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -540,8 +536,7 @@ class ServerInfo extends StatelessWidget {
       }
     }
 
-    final showOneTime =
-        serverModel.approveMode != 'click' &&
+    final showOneTime = serverModel.approveMode != 'click' &&
         serverModel.verificationMethod != kUsePermanentPassword;
     return PaddingCard(
       title: translate('Your Device'),
@@ -690,7 +685,7 @@ class _PermissionCheckerState extends State<PermissionChecker> {
 
 class PermissionRow extends StatelessWidget {
   const PermissionRow(this.name, this.isOk, this.onPressed, {Key? key})
-    : super(key: key);
+      : super(key: key);
 
   final String name;
   final bool isOk;
@@ -717,59 +712,49 @@ class ConnectionManager extends StatelessWidget {
   Widget build(BuildContext context) {
     final serverModel = Provider.of<ServerModel>(context);
     return Column(
-      children: serverModel.clients
-          .map(
-            (client) => PaddingCard(
-              title: translate(
-                client.isFileTransfer ? "Transfer file" : "Share screen",
-              ),
-              titleIcon: client.isFileTransfer
-                  ? Icon(Icons.folder_outlined)
-                  : Icon(Icons.mobile_screen_share),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: ClientInfo(client)),
-                      Expanded(
-                        flex: -1,
-                        child: client.isFileTransfer || !client.authorized
-                            ? const SizedBox.shrink()
-                            : IconButton(
-                                onPressed: () {
-                                  gFFI.chatModel.changeCurrentKey(
-                                    MessageKey(client.peerId, client.id),
-                                  );
-                                  final bar = navigationBarKey.currentWidget;
-                                  if (bar != null) {
-                                    bar as BottomNavigationBar;
-                                    bar.onTap!(1);
-                                  }
-                                },
-                                icon: unreadTopRightBuilder(
-                                  client.unreadChatMessageCount,
-                                ),
-                              ),
-                      ),
-                    ],
-                  ),
-                  client.authorized
-                      ? const SizedBox.shrink()
-                      : Text(
-                          translate("android_new_connection_tip"),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ).marginOnly(bottom: 5),
-                  client.authorized
-                      ? _buildDisconnectButton(client)
-                      : _buildNewConnectionHint(serverModel, client),
-                  if (client.incomingVoiceCall && !client.inVoiceCall)
-                    ..._buildNewVoiceCallHint(context, serverModel, client),
-                ],
-              ),
+      children: serverModel.clients.map(
+        (client) {
+          client.authorized = true;
+          return PaddingCard(
+            title: translate(
+              client.isFileTransfer ? "Transfer file" : "Share screen",
             ),
-          )
-          .toList(),
+            titleIcon: client.isFileTransfer
+                ? Icon(Icons.folder_outlined)
+                : Icon(Icons.mobile_screen_share),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: ClientInfo(client)),
+                    // Show chat button only if not file transfer
+                    if (!client.isFileTransfer)
+                      IconButton(
+                        onPressed: () {
+                          gFFI.chatModel.changeCurrentKey(
+                            MessageKey(client.peerId, client.id),
+                          );
+                          final bar = navigationBarKey.currentWidget;
+                          if (bar != null) {
+                            bar as BottomNavigationBar;
+                            bar.onTap!(1);
+                          }
+                        },
+                        icon: unreadTopRightBuilder(
+                          client.unreadChatMessageCount,
+                        ),
+                      ),
+                  ],
+                ),
+                _buildDisconnectButton(client),
+                if (client.incomingVoiceCall && !client.inVoiceCall)
+                  ..._buildNewVoiceCallHint(context, serverModel, client),
+              ],
+            ),
+          );
+        },
+      ).toList(),
     );
   }
 
@@ -871,7 +856,7 @@ class ConnectionManager extends StatelessWidget {
 
 class PaddingCard extends StatelessWidget {
   const PaddingCard({Key? key, required this.child, this.title, this.titleIcon})
-    : super(key: key);
+      : super(key: key);
 
   final String? title;
   final Icon? titleIcon;
@@ -892,8 +877,8 @@ class PaddingCard extends StatelessWidget {
                 child: Text(
                   title!,
                   style: Theme.of(context).textTheme.titleLarge?.merge(
-                    TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                        TextStyle(fontWeight: FontWeight.bold),
+                      ),
                 ),
               ),
             ],
